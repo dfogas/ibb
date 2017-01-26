@@ -15,9 +15,9 @@ describe('count route', () => {
 
     afterEach((done) => {
         client.exists("count", (err, res) => {
-    if (err) done(err);
-        else if (res) client.del("count", done);
-        else done();
+            if (err) done(err);
+            else if (res) client.del("count", done);
+            else done();
         })
     })
 
