@@ -3,30 +3,34 @@ const qs = require("querystring")
 const url = require("url")
 const redis = require("redis")
 const client = redis.createClient()
-const checkCountParam = require('./lib/checkcountparam')
+const checkCountParam = require("./lib/checkcountparam")
 
 client.on("error", (err) =>
-    fs.appendFile('ibb-error.log', `${err}\n`, 'utf8', (err) =>
-        console.log(`Redis client error ${err}`)))
+    fs.appendFile("ibb-error.log", `${err}\n`, "utf8", (error) =>
+        console.log(`Redis client error ${error}`)))
 
 function track(req, res) {
-    fs.appendFile('requests.json', `${url.parse(req.url).query}\n`, 'utf8', (err) => {
+    fs.appendFile("requests.json", `${url.parse(req.url).query}\n`, "utf8", (err) => {
         if (err) console.log(`error appending requests log ${err}`)
     })
-    if (req.method === 'POST' && checkCountParam(req.url)) {
+    if (req.method === "POST" && checkCountParam(req.url)) {
         client.incr("count")
         res.end()
     } else {
         res.writeHead(405, {"Content-Type": "text/html", "Allow": "POST"})
-        res.write(`<h3>405 - Method not allowed.</h3>`)
+        res.write(`<h3>Method or method and qs param combination not allowed .</h3>`)
         res.end()
     }
 }
 
 function count(req, res) {
-    if (req.method === 'GET') {
+    if (req.method === "GET") {
         client.exists("count", (err, reply) => {
-            if (reply === 1) {
+            if (err) {
+                res.writeHead(503, {"Content-Type": "text/html"})
+                res.write(`<h3>Failed database driver method call</h3>`)
+                res.end()
+            } else if (reply === 1) {
                 client.get("count", (err, reply) => {
                     if (err) {
                         res.writeHead(503, {"Content-Type": "text/html"})
