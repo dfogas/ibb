@@ -1,10 +1,10 @@
 const http = require("http")
 const url = require("url")
 const route = require("./router")
-const reqHandlers = require("./requestHandlers")
+const config = require("./config")
 
-const port = 3007
-const hostname = "127.0.0.1"
+const port = config.port
+const hostname = config.hostname
 
 const server = http.createServer((req, res) => {
     const pathname = url.parse(req.url).pathname

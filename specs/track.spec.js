@@ -24,7 +24,7 @@ describe("track route", (done) => {
     //1
     it("increments db count key for default usecase", (done) => {
         chai.request(httpServer)
-        .post('/track?count=true')
+        .post('/track?count=1')
         .end(() => {
             client.get("count", (err, reply) => {
                 if (err) done(err);
@@ -40,12 +40,12 @@ describe("track route", (done) => {
     it("sets up value in redisdb for nil", (done) => {
         client.del("count", () => {
             chai.request(httpServer)
-            .post('/track?count=zorro')
+            .post('/track?count=4')
             .end(() => {
                 client.get("count", (err, reply) => {
                     if (err) done(err);
                     else {
-                        reply.should.be.equal('1')
+                        reply.should.be.equal('4')
                         done()
                     }
                 })
